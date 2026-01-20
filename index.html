@@ -1,0 +1,215 @@
+l<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SAHUR SENSI – Versão Demo</title>
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial}
+body{background:#0b0b0b;color:#fff}
+h2{text-align:center;margin-bottom:10px}
+button{
+width:100%;padding:12px;border:none;border-radius:8px;
+background:linear-gradient(135deg,#ff1a1a,#b30000);
+color:#fff;font-weight:bold;margin-top:10px
+}
+select,textarea,input{
+width:100%;padding:12px;margin-top:10px;border-radius:8px;border:none
+}
+textarea{height:210px;resize:none}
+#login,#app{padding:15px}
+#login{height:100vh;display:flex;flex-direction:column;justify-content:center}
+.tabs{display:flex;gap:8px;overflow-x:auto;margin-bottom:12px}
+.tab{
+min-width:120px;padding:10px;text-align:center;
+background:#222;border-radius:8px;font-weight:bold
+}
+.tab.active{background:linear-gradient(135deg,#ff1a1a,#b30000)}
+.card{background:#111;padding:15px;border-radius:12px}
+.footer{text-align:center;font-size:12px;opacity:.7;margin-top:15px}
+</style>
+</head>
+
+<body>
+
+<div id="login">
+<h2>SAHUR SENSI<br>GERADOR FF</h2>
+<input type="password" id="senha" placeholder="Senha">
+<button onclick="entrar()">ENTRAR</button>
+</div>
+
+<div id="app" style="display:none">
+<h2>GERADOR SENSI FF</h2>
+
+<div class="tabs">
+<div class="tab active" onclick="trocarAba('poco',this)">POCO</div>
+<div class="tab" onclick="trocarAba('redmi',this)">REDMI</div>
+<div class="tab" onclick="trocarAba('xiaomi',this)">XIAOMI</div>
+<div class="tab" onclick="trocarAba('samsung',this)">SAMSUNG</div>
+<div class="tab" onclick="trocarAba('motorola',this)">MOTOROLA</div>
+<div class="tab" onclick="trocarAba('iphone',this)">iPHONE</div>
+<div class="tab" onclick="trocarAba('nokia',this)">NOKIA</div>
+<div class="tab" onclick="trocarAba('tecno',this)">TECNO</div>
+<div class="tab" onclick="trocarAba('realme',this)">REALME</div>
+<div class="tab" onclick="trocarAba('oppo',this)">OPPO</div>
+<div class="tab" onclick="trocarAba('asus',this)">ASUS</div>
+<div class="tab" onclick="trocarAba('vivo',this)">VIVO</div>
+</div>
+
+<div class="card">
+<select id="modelo" onchange="gerarSensi()"></select>
+
+<select id="dpi" onchange="gerarSensi()">
+<option value="400">400 DPI</option>
+<option value="450">450 DPI</option>
+<option value="500">500 DPI</option>
+<option value="550">550 DPI</option>
+<option value="600">600 DPI</option>
+<option value="650">650 DPI</option>
+<option value="700">700 DPI</option>
+<option value="750">750 DPI</option>
+<option value="800" selected>800 DPI</option>
+</select>
+
+<textarea id="sensi" readonly></textarea>
+<button onclick="copiar()">📋 COPIAR</button>
+</div>
+
+<div class="footer">
+Criador: darkson801<br>
+Versão Demo
+</div>
+</div>
+
+<script>
+const SENHA="SAHUR SENSI";
+let abaAtual="poco";
+const DPI_PADRAO=800;
+
+function calc(v,d){return Math.round((v*DPI_PADRAO)/d);}
+
+function texto(nome,d){
+return `🎯 ${nome}
+📱 DPI: ${d}
+
+Geral ${calc(92,d)}
+Red Dot ${calc(89,d)}
+2x ${calc(85,d)}
+4x ${calc(77,d)}
+AWM ${calc(61,d)}
+Olhadinha ${calc(51,d)}
+
+🔥 FOCO EM CAPA`;
+}
+
+const dados={
+
+poco:[
+"F3","F4","F4 GT","F5","F5 Pro","F6","F6 Pro","F7","F7 Pro","F7 Ultra",
+"X3","X3 Pro","X4 Pro","X5","X5 Pro","X6","X6 Pro","X7","X7 Pro",
+"M3","M4","M4 Pro","M5","M5s","M6","M6 Pro","M6 Plus","M7","M7 Pro","M8","M8 Pro",
+"C3","C31","C40","C50","C51","C55","C61","C65","C75","C85"
+].map(n=>({n:"POCO "+n})),
+
+redmi:[
+"9","9A","9C","10","10A","10C","11","11A","11C","12","12C","13","13C",
+"Note 9","Note 10","Note 10S","Note 11","Note 11 Pro","Note 12","Note 12 Pro",
+"Note 13","Note 13 Pro","Note 13 Pro+","K40","K50","K60","K70"
+].map(n=>({n:"Redmi "+n})),
+
+xiaomi:[
+"Mi 9","Mi 10","Mi 11","Mi 12","Mi 13","Mi 14",
+"11T","11T Pro","12T","12T Pro","13T","13T Pro",
+"Mix 4","Mix Fold","Mix Fold 2","Mix Fold 3"
+].map(n=>({n:"Xiaomi "+n})),
+
+samsung:[
+"Galaxy A01","A02","A03","A04","A05","A10","A11","A12","A13","A14","A15",
+"A20","A21","A22","A23","A24","A25","A30","A31","A32","A33","A34","A35",
+"A50","A51","A52","A53","A54","A55",
+"M10","M11","M12","M13","M14","M15","M20","M21","M22","M23","M30","M31","M32","M33","M34","M35",
+"S20","S21","S22","S23","S24","S24 Ultra"
+].map(n=>({n:n})),
+
+motorola:[
+"Moto E7","E13","E20","E22",
+"G10","G20","G30","G31","G32","G34","G40","G41","G42","G52","G53","G54",
+"G60","G62","G73","G84","Edge 20","Edge 30","Edge 40","Edge 50"
+].map(n=>({n:n})),
+
+iphone:[
+"iPhone 8","8 Plus","X","XR","XS","11","11 Pro","12","12 Pro",
+"13","13 Pro","14","14 Pro","15","15 Pro"
+].map(n=>({n:n})),
+
+nokia:[
+"C20","C30","C31","C32","G10","G11","G20","G21","G22","G42","X10","X20","X30"
+].map(n=>({n:"Nokia "+n})),
+
+tecno:[
+"Spark 10","Spark 20","Spark 20 Pro",
+"Pova Neo","Pova 5","Pova 6",
+"Camon 19","Camon 20","Camon 30"
+].map(n=>({n:"Tecno "+n})),
+
+realme:[
+"C11","C21","C25","C33","C35","C53","C55",
+"8","9","10","11","12","12 Pro","12 Pro+",
+"GT","GT Neo","GT 2","GT 3"
+].map(n=>({n:"Realme "+n})),
+
+oppo:[
+"A15","A16","A17","A38","A58","A78",
+"Reno 7","Reno 8","Reno 9","Reno 10","Reno 11"
+].map(n=>({n:"OPPO "+n})),
+
+asus:[
+"Zenfone 8","Zenfone 9","Zenfone 10",
+"ROG Phone 5","ROG Phone 6","ROG Phone 7","ROG Phone 8"
+].map(n=>({n:n})),
+
+vivo:[
+"Y20","Y21","Y22","Y27","Y36","V25","V27","V29","X80","X90","X100"
+].map(n=>({n:"vivo "+n}))
+};
+
+function entrar(){
+if(senha.value===SENHA){
+login.style.display="none";
+app.style.display="block";
+carregar();
+}else alert("Senha incorreta");
+}
+
+function trocarAba(a,e){
+abaAtual=a;
+document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
+e.classList.add("active");
+carregar();
+sensi.value="";
+}
+
+function carregar(){
+modelo.innerHTML='<option value="">Selecione o celular</option>';
+dados[abaAtual].forEach((m,i)=>{
+modelo.innerHTML+=`<option value="${i}">${m.n}</option>`;
+});
+}
+
+function gerarSensi(){
+if(modelo.value==="")return;
+const dpi=parseInt(document.getElementById("dpi").value);
+const nome=dados[abaAtual][modelo.value].n;
+sensi.value=texto(nome,dpi);
+}
+
+function copiar(){
+sensi.select();
+document.execCommand("copy");
+alert("Sensibilidade copiada!");
+}
+</script>
+
+</body>
+</html>
